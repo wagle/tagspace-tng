@@ -1,0 +1,32 @@
+{
+
+  "manifest_version": 2,
+  "name": "Scrollable-List Sidebar",
+  "description": "Displays a scrollable-list sidebar.",
+  "version": "1.0",
+
+  "applications": {
+    "gecko": {
+      "strict_min_version": "54.0a1"
+    }
+  },
+
+  "sidebar_action": {
+    "default_icon": "icons/star.png",
+    "default_title" : "Cognospace",
+    "default_panel": "sidebar/panel.html"
+  },
+
+  "permissions": ["storage", "tabs"],
+
+  "web_accessible_resources": ["sidebar/*.js"],
+
+  "commands": {
+    "_execute_sidebar_action": {
+      "suggested_key": {
+        "default": "Ctrl+Q"
+      }
+    }
+  }
+
+}
