@@ -1,89 +1,212 @@
-var myWindowId;
-const contentBox = document.querySelector("#content");
+var ROW_HEIGHT = 20;
+var RANDOM_WORDS = [
+    'abstrusity',
+    'advertisable',
+    'bellwood',
+    'benzole',
+    'boreum',
+    'brenda',
+    'cassiopeian',
+    'chansonnier',
+    'cleric',
+    'conclusional',
+    'conventicle',
+    'copalm',
+    'cornopion',
+    'crossbar',
+    'disputative',
+    'djilas',
+    'ebracteate',
+    'ephemerally',
+    'epidemical',
+    'evasive',
+    'eyeglasses',
+    'farragut',
+    'fenny',
+    'ferryman',
+    'fluently',
+    'foreigner',
+    'genseng',
+    'glaiket',
+    'haunch',
+    'histogeny',
+    'illocution',
+    'imprescriptible',
+    'inapproachable',
+    'incisory',
+    'intrusiveness',
+    'isoceraunic',
+    'japygid',
+    'juiciest',
+    'jump',
+    'kananga',
+    'leavening',
+    'legerdemain',
+    'licence',
+    'licia',
+    'luanda',
+    'malaga',
+    'mathewson',
+    'nonhumus',
+    'nonsailor',
+    'nummary',
+    'nyregyhza',
+    'onanist',
+    'opis',
+    'orphrey',
+    'paganising',
+    'pebbling',
+    'penchi',
+    'photopia',
+    'pinocle',
+    'principally',
+    'prosector.',
+    'radiosensitive',
+    'redbrick',
+    'reexposure',
+    'revived',
+    'subexternal',
+    'sukarnapura',
+    'supersphenoid',
+    'tabularizing',
+    'territorialism',
+    'tester',
+    'thalassography',
+    'tuberculise',
+    'uncranked',
+    'undersawyer',
+    'unimpartible',
+    'unsubdivided',
+    'untwining',
+    'unwaived',
+    'webfoot',
+    'wedeling',
+    'wellingborough',
+    'whiffet',
+    'whipstall',
+    'wot',
+    'yonkersite',
+    'zonary',
+];
+var data = createRandomizedData();
 
-var count = 0;
+function renderItem(item, keyPrefix) {
+    var onClick = function(event) {
+        event.stopPropagation();
+        item.expanded = !item.expanded;
+        List.recomputeRowHeights();
+        List.forceUpdate();
+    };
 
-function populate() {
-    var fastlist = E("list").widget;
-    var values = [];
-    for (var i = 0; i < 100000; i++) {
-        values.push({
-            from: "Fred",
-            to: "Wilma",
-            subject: "Jaba! " + (i + count + 1) + ". time",
-            date: (i-3400) + "-03-01",
+    var props = {key: keyPrefix};
+    var children = [];
+    var itemText;
+
+    if (item.expanded) {
+        props.onClick = onClick;
+        itemText = '[-] ' + item.name;
+        children = item.children.map(function(child, index) {
+            return renderItem(child, keyPrefix + '-' + index);
         });
+    } else if (item.children.length) {
+        props.onClick = onClick;
+        itemText = '[+] ' + item.name;
+    } else {
+        itemText = '    ' + item.name;
     }
-    fastlist.addEntriesFromArray(values);
-    count += values.length;
+
+    children.unshift(
+        React.DOM.div(
+            {
+                className: 'item',
+                key: 'label',
+                style: {
+                    cursor: item.children.length ? 'pointer' : 'auto',
+                },
+            },
+            itemText,
+        ),
+    );
+
+    return React.DOM.ul(null, React.DOM.li(props, children));
 }
 
-function onLoad() {
-    var button = document.getElementById('populate');
-    //button.addEventListener('click', function () { alert('ONE') }, false);
-    button.setAttribute('onclick', "alert('NOT CALLED')"); // event handler listener is registered here
-    //button.addEventListener('click', function () { alert('THREE') }, false);
-    button.onclick = populate;
-    //button.addEventListener('click', function () { alert('FOUR') }, false);
+function getExpandedItemCount(item) {
+    var count = 1;
 
-    new Fastlist(E("list"));
-    populate();
-}
-window.addEventListener("load", onLoad, false);
+    if (item.expanded) {
+        count += item.children
+            .map(getExpandedItemCount)
+            .reduce(function(total, count) {
+                return total + count;
+            }, 0);
+    }
 
-/*
-/!*
-Make the content box editable as soon as the user mouses over the sidebar.
-*!/
-window.addEventListener("mouseover", () => {
-  contentBox.setAttribute("contenteditable", true);
-});
-
-/!*
-When the user mouses out, save the current contents of the box.
-*!/
-window.addEventListener("mouseout", () => {
-  contentBox.setAttribute("contenteditable", false);
-  browser.tabs.query({windowId: myWindowId, active: true}).then((tabs) => {
-    let contentToStore = {};
-    contentToStore[tabs[0].url] = contentBox.textContent;
-    browser.storage.local.set(contentToStore);
-  });
-});
-
-/!*
-Update the sidebar's content.
-
-1) Get the active tab in this sidebar's window.
-2) Get its stored content.
-3) Put it in the content box.
-*!/
-function updateContent() {
-  browser.tabs.query({windowId: myWindowId, active: true})
-    .then((tabs) => {
-      return browser.storage.local.get(tabs[0].url);
-    })
-    .then((storedInfo) => {
-      contentBox.textContent = storedInfo[Object.keys(storedInfo)[0]];
-    });
+    return count;
 }
 
-/!*
-Update content when a new tab becomes active.
-*!/
-browser.tabs.onActivated.addListener(updateContent);
+var List;
+function setRef(ref) {
+    List = ref;
+}
 
-/!*
-Update content when a new page is loaded into a tab.
-*!/
-browser.tabs.onUpdated.addListener(updateContent);
+function cellRenderer(params) {
+    var renderedCell = renderItem(data[params.index], params.index);
 
-/!*
-When the sidebar loads, get the ID of its window,
-and update its content.
-*!/
-browser.windows.getCurrent({populate: true}).then((windowInfo) => {
-  myWindowId = windowInfo.id;
-  updateContent();
+    return React.DOM.ul(
+        {
+            key: params.key,
+            style: params.style,
+        },
+        renderedCell,
+    );
+}
+
+function rowHeight(params) {
+    return getExpandedItemCount(data[params.index]) * ROW_HEIGHT;
+}
+
+var App = React.createClass({
+    render: function() {
+        return React.createElement(ReactVirtualized.AutoSizer, null, function(
+            params,
+        ) {
+            return React.createElement(ReactVirtualized.List, {
+                height: params.height,
+                overscanRowCount: 10,
+                ref: setRef,
+                rowHeight: rowHeight,
+                rowRenderer: cellRenderer,
+                rowCount: data.length,
+                width: params.width,
+            });
+        });
+    },
 });
-*/
+
+ReactDOM.render(React.createElement(App), document.querySelector('#mount'));
+
+function createRandomizedData() {
+    var data = [];
+
+    for (var i = 0; i < 10000; i++) {
+        data.push(createRandomizedItem(0));
+    }
+
+    return data;
+}
+
+function createRandomizedItem(depth) {
+    var item = {};
+    item.children = [];
+    item.name = RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
+
+    var numChildren = depth < 3 ? Math.floor(Math.random() * 5) : 0;
+    for (var i = 0; i < numChildren; i++) {
+        item.children.push(createRandomizedItem(depth + 1));
+    }
+
+    item.expanded = numChildren > 0 && Math.random() < 0.25;
+
+    return item;
+}

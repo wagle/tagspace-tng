@@ -17,6 +17,8 @@
     "default_panel": "sidebar/panel.html"
   },
 
+  "content_security_policy": "script-src 'self' https://unpkg.com; object-src 'self'",
+
   "permissions": ["storage", "tabs"],
 
   "web_accessible_resources": ["sidebar/*.js"],

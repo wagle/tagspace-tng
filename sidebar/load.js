@@ -1,0 +1,2 @@
+loadReact();
+loadScriptsAndStyles('panel.js');
