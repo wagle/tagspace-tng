@@ -17,14 +17,14 @@
 /* Table default theme */
 
 .ReactVirtualized__Table {
+    font-size: smaller;
 }
 
 .ReactVirtualized__Table__Grid {
 }
 
 .ReactVirtualized__Table__headerRow {
-    font-weight: 700;
-    text-transform: uppercase;
+    font-weight: caption;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -43,20 +43,31 @@
     overflow: hidden;
 }
 
-.ReactVirtualized__Table__headerColumn,
-.ReactVirtualized__Table__rowColumn {
-    margin-right: 10px;
+.ReactVirtualized__Table__headerColumn {
+    margin-right: 0px;
     min-width: 0px;
-}
-.ReactVirtualized__Table__rowColumn {
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding-left: .5em;
+    padding-right: .5em;
 }
 
-.ReactVirtualized__Table__headerColumn:first-of-type,
-.ReactVirtualized__Table__rowColumn:first-of-type {
-    margin-left: 10px;
+.ReactVirtualized__Table__rowColumn {
+    margin-right: 0em;
+    min-width: 0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: .5em;
+    padding-right: .5em;
 }
+
+.ReactVirtualized__Table__headerColumn:first-of-type {
+    margin-left: 0px;
+}
+
+.ReactVirtualized__Table__rowColumn:first-of-type {
+    margin-left: 0px;
+    text-align: right;
+}
+
 .ReactVirtualized__Table__sortableHeaderColumn {
     cursor: pointer;
 }
