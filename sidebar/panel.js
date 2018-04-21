@@ -117,19 +117,4 @@ function onFulfilled(bookmarkItems) {
     });
 
     ReactDOM.render(React.createElement(App), document.querySelector('#mount'));
-
-    document.body.addEventListener('click', function(event) {
-        if (testRunner.isRunning()) {
-            testRunner.stop();
-        } else {
-            testRunner.start();
-        }
-    });
 };
-
-const testCase = createScrollingTestCase(
-    document.querySelector('.ReactVirtualized__Grid'),
-);
-const TestRunner = FpsMeasurer.TestRunner;
-const testRunner = new TestRunner(testCase, 5);
-
