@@ -30,7 +30,8 @@ let allBookmarks = allBookmarksPromise.then(onFulfilled, onRejected);
 
 function rowGetter({index}) {
     let bookmark = allBookmarks[index];
-    let rowval = [index, bookmark.id, bookmark.title, bookmark.url, bookmark.type];
+//    let rowval = [index, bookmark.id, bookmark.title, bookmark.url, bookmark.type];
+    let rowval = [tags.getTagsForURI(bookmark.id), bookmark.id, bookmark.title, bookmark.url, bookmark.type];
     return rowval;
 }
 

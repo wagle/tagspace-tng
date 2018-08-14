@@ -15,12 +15,12 @@ function loadScript(source) {
 
 function loadScriptsAndStyles(source) {
   loadStyle('styles.css', function() {
-    loadScript('react-virtualized.js');
+    loadScript('../react-libs/react-virtualized.js');
     loadScript(source);
   });
 }
 
 function loadReact() {
-  loadScript(`react.min.js`);
-  loadScript(`react-dom.min.js`);
+  loadScript(`../react-libs/react.min.js`);
+  loadScript(`../react-libs/react-dom.min.js`);
 }
