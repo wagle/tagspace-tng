@@ -5,12 +5,6 @@
   "description": "Displays a scrollable-list sidebar.",
   "version": "1.1",
 
-  "applications": {
-    "gecko": {
-      "id": "tagsEXT@cognophysics.org",
-      "strict_min_version": "42.0"
-    }
-  },
 
   "sidebar_action": {
     "default_icon": "icons/star.png",
@@ -18,7 +12,7 @@
     "default_panel": "sidebar/panel.html"
   },
 
-  "permissions": ["storage", "tabs", "bookmarks", "experiments.tagsAPI"],
+  "permissions": ["storage", "tabs", "bookmarks", "experiments.tags"],
 
   "web_accessible_resources": ["sidebar/*.js"],
 

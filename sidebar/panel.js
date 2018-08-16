@@ -25,25 +25,49 @@ function defaultHeaderRenderer({dataKey, label, sortBy, sortDirection}) {
 //     allBookmarks = v;
 // });
 
-let allBookmarksPromise = browser.bookmarks.search({});
-let allBookmarks = allBookmarksPromise.then(onFulfilled, onRejected);
+// let allBookmarksPromise = browser.bookmarks.search({});
+// let allBookmarkTagsPromise = browser.experiments.tags.getAllTags();
+// Promise.all([allBookmarksPromise, allBookmarkTagsPromise]).then(onFulfilled, onRejected);
 
+let allBookmarksPromise = browser.bookmarks.search({});
+allBookmarksPromise.then(needTags, onRejected);
+
+async function needTags(bookmarks) {
+    allBookmarks = bookmarks;
+    console.log("bookmarks: ", typeof bookmarks, bookmarks);
+    let tagPromises = [];
+    for (let i = 0; i < allBookmarks.length; i++) {
+        if (allBookmarks[i].type === "bookmark") {
+            tagPromises[i] = browser.experiments.tags.getTagsForURI(allBookmarks[i].url);
+        } else {
+            tagPromises[i] = Promise.resolve("n/a");
+        }
+    };
+    Promise.all(tagPromises).then(gotTags, onRejected);
+};
+function gotTags(solidifiedTags) {
+    for (let i = 0; i < solidifiedTags.length; i++) {
+        allBookmarks[i].tags = solidifiedTags[i];
+    };
+    onFulfilled();
+};
 function rowGetter({index}) {
     let bookmark = allBookmarks[index];
+    console.log("bookmark: ", typeof bookmark, bookmark);
+    console.log("bookmark url: ", typeof bookmark.url, bookmark.url);
 //    let rowval = [index, bookmark.id, bookmark.title, bookmark.url, bookmark.type];
-    let rowval = [tags.getTagsForURI(bookmark.id), bookmark.id, bookmark.title, bookmark.url, bookmark.type];
+    let rowval = [bookmark.tags, bookmark.id, bookmark.title, bookmark.url, bookmark.type];
     return rowval;
 }
-
 function onRejected(error) {
     console.log(`An error: ${error}`);
     console.log(error);
     return {0:0};
 }
 
-function onFulfilled(bookmarkItems) {
-    console.log(`length: ${bookmarkItems.length}`);
-    allBookmarks = bookmarkItems;
+function onFulfilled(values) {
+    // allBookmarks = values;
+    console.log(`bookmarks: ${allBookmarks.length}`);
     var App = React.createClass({
         render: function () {
             const flexColumns = [];
@@ -52,8 +76,8 @@ function onFulfilled(bookmarkItems) {
                 React.createElement(ReactVirtualized.Column, {
                     dataKey: 0,
                     key: 0,
-                    label: "row #",
-                    width: 55,
+                    label: "tags",
+                    width: 100,
                 }),
             );
             flexColumns.push(
